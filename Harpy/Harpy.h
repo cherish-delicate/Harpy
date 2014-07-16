@@ -76,6 +76,18 @@ typedef NS_ENUM(NSUInteger, HarpyAlertType)
 @property (copy, nonatomic) NSString *forceLanguageLocalization;
 
 /**
+ @b OPTIONAL: Use for Custom Server Setting
+ */
+@property (strong, nonatomic) NSURL *customURLUpdate;
+
+@property (strong, nonatomic) NSString *CurrentServerVersion;
+
+@property (nonatomic) BOOL UseCustomServer;
+
+@property (nonatomic) BOOL SimulateOnMac;
+
+@property (nonatomic) BOOL customResult;
+/**
  Harpy's Singleton method
  */
 + (Harpy *)sharedInstance;
@@ -88,6 +100,7 @@ typedef NS_ENUM(NSUInteger, HarpyAlertType)
  Do not use this method if you are using checkVersionDaily or checkVersionWeekly.
  */
 - (void)checkVersion;
+
 
 /**
  Perform daily check for new version of your app.
