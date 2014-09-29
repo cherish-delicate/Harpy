@@ -42,9 +42,7 @@ typedef NS_ENUM(NSUInteger, HarpyAlertType)
 };
 
 @interface Harpy : NSObject
-{
-    NSString *AppStoreVersion;
-}
+
 /**
  The harpy delegate can be used to know when the update dialog is shown and which action a user took.
  See the protocol declaration above.
@@ -122,8 +120,4 @@ typedef NS_ENUM(NSUInteger, HarpyAlertType)
  */
 - (void)checkVersionWeekly;
 
-/**
- Get App Store CurrentVersion
- */
-- (id)getCurrentAppStoreVersion;
 @end

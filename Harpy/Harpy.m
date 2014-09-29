@@ -85,60 +85,45 @@ NSString * const HarpyLanguageSpanish = @"es";
             [self showAlertIfCurrentAppStoreVersionNotSkipped:[self CurrentServerVersion]];
         }
     }else{
-        
-        
-        [self getStoreVersion];
-        
-        NSArray *versionsInAppStore = [HARPY_APP_STORE_RESULTS valueForKey:@"version"];
-        if ([versionsInAppStore count])
-        {
-            [self checkIfDeviceIsSupportedInCurrentAppStoreVersion:AppStoreVersion];
+        NSString *storeString = nil;
+        if ([self countryCode]) {
+            storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_COUNTRY_SPECIFIC, self.appID, self.countryCode];
+        } else {
+            storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_UNIVERSAL, self.appID];
         }
+        
+        NSURL *storeURL = [NSURL URLWithString:storeString];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:storeURL];
+        [request setHTTPMethod:@"GET"];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+            
+            if ([data length] > 0 && !error) { // Success
+                
+                self.appData = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    // Store version comparison date
+                    self.lastVersionCheckPerformedOnDate = [NSDate date];
+                    [[NSUserDefaults standardUserDefaults] setObject:[self lastVersionCheckPerformedOnDate] forKey:HARPY_DEFAULT_STORED_VERSION_CHECK_DATE];
+                    [[NSUserDefaults standardUserDefaults] synchronize];
+                    
+                    // All versions that have been uploaded to the AppStore
+                    NSArray *versionsInAppStore = [HARPY_APP_STORE_RESULTS valueForKey:@"version"];
+                    
+                    if ([versionsInAppStore count]) { // No versions of app in AppStore
+                        
+                        NSString *currentAppStoreVersion = [versionsInAppStore objectAtIndex:0];
+                        [self checkIfDeviceIsSupportedInCurrentAppStoreVersion:currentAppStoreVersion];
+                        
+                    }
+                });
+            }
+        }];
     }
     
-}
-
-- (void)getStoreVersion{
-    
-    NSString *storeString = nil;
-    if ([self countryCode]) {
-        storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_COUNTRY_SPECIFIC, self.appID, self.countryCode];
-    } else {
-        storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_UNIVERSAL, self.appID];
-    }
-    
-    NSURL *storeURL = [NSURL URLWithString:storeString];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:storeURL];
-    [request setHTTPMethod:@"GET"];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        
-        if ([data length] > 0 && !error) { // Success
-            
-            self.appData = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                // Store version comparison date
-                self.lastVersionCheckPerformedOnDate = [NSDate date];
-                [[NSUserDefaults standardUserDefaults] setObject:[self lastVersionCheckPerformedOnDate] forKey:HARPY_DEFAULT_STORED_VERSION_CHECK_DATE];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                
-                // All versions that have been uploaded to the AppStore
-                NSArray *versionsInAppStore = [HARPY_APP_STORE_RESULTS valueForKey:@"version"];
-                
-                if ([versionsInAppStore count]) { // No versions of app in AppStore
-                    AppStoreVersion = [versionsInAppStore objectAtIndex:0];
-                }
-            });
-        }
-    }];
-}
-
-- (id)getCurrentAppStoreVersion{
-    [self getStoreVersion];
-    return AppStoreVersion;
 }
 
 - (void)checkVersionDaily
