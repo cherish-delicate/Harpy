@@ -53,7 +53,7 @@ NSString * const HarpyLanguageSpanish = @"es";
 @end
 
 @implementation Harpy
-@synchronized currentAppStoreVersion;
+@synthesize currentAppStoreVersion;
 
 #pragma mark - Initialization
 + (Harpy *)sharedInstance
