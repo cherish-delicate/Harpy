@@ -122,4 +122,8 @@ typedef NS_ENUM(NSUInteger, HarpyAlertType)
  */
 - (void)checkVersionWeekly;
 
+/**
+ Get App Store CurrentVersion
+ */
+- (id)getCurrentAppStoreVersion;
 @end
