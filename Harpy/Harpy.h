@@ -82,6 +82,8 @@ typedef NS_ENUM(NSUInteger, HarpyAlertType)
 
 @property (strong, nonatomic) NSString *CurrentServerVersion;
 
+@property (strong, nonatomic) NSString *CurrentAppStoreVersion;
+
 @property (nonatomic) BOOL UseCustomServer;
 
 @property (nonatomic) BOOL SimulateOnMac;
