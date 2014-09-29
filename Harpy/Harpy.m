@@ -53,7 +53,6 @@ NSString * const HarpyLanguageSpanish = @"es";
 @end
 
 @implementation Harpy
-@synthesize currentAppStoreVersion;
 
 #pragma mark - Initialization
 + (Harpy *)sharedInstance
@@ -86,25 +85,27 @@ NSString * const HarpyLanguageSpanish = @"es";
             [self showAlertIfCurrentAppStoreVersionNotSkipped:[self CurrentServerVersion]];
         }
     }else{
-        NSString *storeString = nil;
-        if ([self countryCode]) {
-            storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_COUNTRY_SPECIFIC, self.appID, self.countryCode];
-        } else {
-            storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_UNIVERSAL, self.appID];
-        }
+        
         
         [self getStoreVersion];
         
         NSArray *versionsInAppStore = [HARPY_APP_STORE_RESULTS valueForKey:@"version"];
         if ([versionsInAppStore count])
         {
-           [self checkIfDeviceIsSupportedInCurrentAppStoreVersion:currentAppStoreVersion];
+            [self checkIfDeviceIsSupportedInCurrentAppStoreVersion:AppStoreVersion];
         }
     }
     
 }
 
 - (void)getStoreVersion{
+    
+    NSString *storeString = nil;
+    if ([self countryCode]) {
+        storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_COUNTRY_SPECIFIC, self.appID, self.countryCode];
+    } else {
+        storeString = [NSString stringWithFormat:HARPY_APP_STORE_LINK_UNIVERSAL, self.appID];
+    }
     
     NSURL *storeURL = [NSURL URLWithString:storeString];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:storeURL];
@@ -128,7 +129,7 @@ NSString * const HarpyLanguageSpanish = @"es";
                 NSArray *versionsInAppStore = [HARPY_APP_STORE_RESULTS valueForKey:@"version"];
                 
                 if ([versionsInAppStore count]) { // No versions of app in AppStore
-                    currentAppStoreVersion = [versionsInAppStore objectAtIndex:0];
+                    AppStoreVersion = [versionsInAppStore objectAtIndex:0];
                 }
             });
         }
@@ -137,7 +138,7 @@ NSString * const HarpyLanguageSpanish = @"es";
 
 - (id)getCurrentAppStoreVersion{
     [self getStoreVersion];
-    return currentAppStoreVersion;
+    return AppStoreVersion;
 }
 
 - (void)checkVersionDaily
